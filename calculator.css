@@ -1,0 +1,29 @@
+.container{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  
+   
+}
+input{
+    padding: 30px 65px;
+    font-size: 13px;
+}
+ 
+  .btn {
+    font-size: 20px;
+    width: 75px;
+    height: 75px;
+  }
+
+ 
+
+  .btn-operation {
+    background-color: #f0ad4e;
+    color: #ffffff;
+  }
+
+  .btn-equals {
+    background-color: #5cb85c;
+    color: #ffffff;
+  }
