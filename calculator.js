@@ -78,11 +78,9 @@ const applyOperator = (operator) => {
       result = Math.sin((Math.PI / 180) * a);
       break;
     case "PI":
-     // result = Math.PI * parseFloat(operand.pop());
      result = 3.14159 * a;
       break;
     case "e":
-     // result = Math.E * a;
      result = 2.71828 * a;
       break;
     default:
@@ -97,7 +95,6 @@ const calculateResult = () => {
   expression = document.getElementById("result").value;
   operand = [];
   operator = [];
-
   const regex = /(\d+(\.\d+)?|\+|\-|\*|\/|\(|\)|\%|\^|sqrt|cos|tan|sin|PI|e)/g;
   const tokens = expression.match(regex);
   if (!tokens || tokens.length === 0) {
@@ -106,6 +103,7 @@ const calculateResult = () => {
     console.log("Invalid expression");
     return;
   }
+
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
     if (isNumber(token)) {
@@ -131,7 +129,6 @@ const calculateResult = () => {
       operator.push(token);
     }
   }
-
   while (operator.length > 0) {
     const result = applyOperator(operator.pop());
     operand.push(result);
@@ -143,9 +140,8 @@ const calculateResult = () => {
     finalResult = parseFloat(finalResult);
     finalResult = finalResult.toFixed(4);
   }
-  console.log(finalResult)
-  if (isNaN(finalResult) || finalResult === undefined || finalResult === null || finalResult === "Infinity") {
-    console.log("invalid expression");
+
+  if (isNaN(finalResult) || finalResult === undefined || finalResult === null || finalResult === "Infinity" || finalResult === "") {
     err = "Invalid Expression";
     document.getElementById("error").textContent = err;
     document.getElementById("result").classList.add("error-input");
@@ -180,6 +176,13 @@ const clearInput = () => {
   operand = [];
   operator = [];
 };
+
+const appendBackspace = () => {
+  let expression = document.getElementById("result").value;
+  expression = expression.slice(0, -1);
+  document.getElementById("result").value = expression;
+};
+
 handleHistory();
 const deleteHistoryItem = (index) => {
   history.splice(index, 1);
@@ -187,8 +190,3 @@ const deleteHistoryItem = (index) => {
   handleHistory();
 };
 
-const appendBackspace = () => {
-  let expression = document.getElementById("result").value;
-  expression = expression.slice(0, -1);
-  document.getElementById("result").value = expression;
-};
