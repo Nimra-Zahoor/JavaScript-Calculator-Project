@@ -1,9 +1,27 @@
 .container{
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-  
-   
+    justify-content: center; 
+}
+.delete-icon {
+  cursor: pointer;
+  margin-right: 5px;
+  color: red;
+}
+.row{
+  margin: 5%;
+ 
+
+}
+#error{
+  color: red;
+}
+#result {
+  font-size: 24px;
+  width: 180px;
+}
+#history{
+  width: 300px;
 }
 input{
     padding: 30px 65px;

@@ -1,88 +1,180 @@
-let firstOperand = null;
-let secondOperand = null;
-let operator = null;
-const appendNumber = (operand) => {
-  if (operator === null) {
-    // If no operator is set, update the first operand
-    if (firstOperand === null) {
-      firstOperand = operand;
-     // document.getElementById('result').value = firstOperand;
-    } else {
-      firstOperand += operand;
-    }
-  } else {
-    // Operator is set, update the second operand
-    if (secondOperand === null) {
-      secondOperand = operand;
-    } else {
-      secondOperand += operand;
-    }
-  }
-  console.log(firstOperand);
-  console.log(secondOperand);
-  document.getElementById('result').value = firstOperand;
-  document.getElementById('result').value = secondOperand;
+let operator = [];
+let operand = [];
+let expression = "";
+let history = [];
+
+function isNumber(char) {
+return !isNaN(parseFloat(char));
+}
+
+const appendNumber = (number) => {
+document.getElementById("result").value += number;
+expression += number;
 };
-const appendCharacter = (op) => {
-  operator = op;
-  console.log(operator)
+
+const appendCharacter = (char) => {
+document.getElementById("result").value += char;
+expression += char;
 };
+
+function getPrecedence(operator) {
+switch (operator) {
+case "(":
+return 0;
+case ")":
+return 1;
+case "+":
+case "-":
+return 2;
+case "*":
+case "/":
+case "%":
+return 3;
+case "^":
+case "sqrt":
+case "cos":
+case "tan":
+case "sin":
+case "PI":
+case "e":
+return 4;
+default:
+return -1;
+}
+}
+const applyOperator = (operator) => {
+const a = parseFloat(operand.pop());
+let result;
+switch (operator) {
+case "+":
+result = parseFloat(operand.pop()) + a;
+break;
+case "-":
+result = parseFloat(operand.pop()) - a;
+break;
+case "*":
+result = parseFloat(operand.pop()) * a;
+break;
+case "/":
+result = parseFloat(operand.pop()) / a;
+break;
+case "%":
+result = parseFloat(operand.pop()) % a;
+break;
+case "^":
+result = Math.pow(parseFloat(operand.pop()), a);
+break;
+case "sqrt":
+result = Math.sqrt(a);
+break;
+case "tan":
+result = Math.tan((Math.PI / 180) * a);
+break;
+case "cos":
+result = Math.cos((Math.PI / 180) * a);
+break;
+case "sin":
+result = Math.sin((Math.PI / 180) * a);
+break;
+case "PI":
+result = a* 3.14159;
+console.log("The PI result",parseFloat(result))
+break;
+case "e":
+  console.log(a)
+  result = a * 2.71828;
+  console.log(result)
+break;
+default:
+result = 0;
+break;
+}
+operand.push(result.toString());
+return result;
+};
+
 const calculateResult = () => {
-  let result = null;
-  if (firstOperand !== null && operator !== null && secondOperand !== null) {
-    switch (operator) {
-      case '+':
-        result = parseFloat(firstOperand) + parseFloat(secondOperand);
-        break;
-      case '-':
-        result = parseFloat(firstOperand) - parseFloat(secondOperand);
-        break;
-      case '*':
-        result = parseFloat(firstOperand) * parseFloat(secondOperand);
-        break;
-      case '/':
-        result = parseFloat(firstOperand) / parseFloat(secondOperand);
-        break;
-        
-    }
-    firstOperand = result.toFixed(4);
-    operator = null;
-    secondOperand = null;
-  }
- if( result.toString().includes(".")){
-  document.getElementById('result').value = result.toFixed(4);}
-  document.getElementById('result').value = result
+expression = document.getElementById("result").value;
+operand = [];
+operator = [];
+const regex = /(\d+(\.\d+)?|\+|\-|\*|\/|\(|\)|\%|\^|sqrt|cos|tan|sin|PI|e)/g;
+const tokens = expression.match(regex);
+if (!tokens || tokens.length === 0) {
+const err = "Add correct Expression";
+document.getElementById("Error").value = err;
+console.log("Invalid expression");
+return;
+}
+for (let i = 0; i < tokens.length; i++) {
+const token = tokens[i];
+if (isNumber(token)) {
+operand.push(token);
+} else if (token === "(") {
+operator.push(token);
+} else if (token === ")") {
+while (operator.length > 0 && operator[operator.length - 1] !== "(") {
+const result = applyOperator(operator.pop());
+operand.push(result);
+}
+if (operator.length > 0 && operator[operator.length - 1] === "(") {
+operator.pop(); // Pop "(" from the operator stack
+}
+} else {
+while (
+operator.length > 0 &&
+getPrecedence(operator[operator.length - 1]) >= getPrecedence(token)
+) {
+const result = applyOperator(operator.pop());
+operand.push(result);
+}
+operator.push(token);
+}
+}
+
+while (operator.length > 0) {
+const result = applyOperator(operator.pop());
+operand.push(result);
+}
+
+finalResult = operand[0];
+
+if (finalResult.includes(".")) {
+finalResult = parseFloat(finalResult);
+finalResult = finalResult.toFixed(4);
+}
+document.getElementById("result").value = finalResult;
+history.unshift(expression + " = " + finalResult);
+if (history.length > 6) {
+history.pop();
+}
+localStorage.setItem("history", JSON.stringify(history));
 };
- const clearInput=()=>{
-    document.getElementById('result').value = "";
+const handleHistory = () => {
+history = JSON.parse(localStorage.getItem("history")) || [];
+let historyText = "";
+for (let i = 0; i < history.length; i++) {
+const historyItem = history[i];
+// const binIcon = `<span class="delete-icon" onclick="deleteHistoryItem(${i})">🗑</span>`;
+historyText += historyItem + "\n";
+}
+document.getElementById("history").innerHTML = historyText;
+};
+const clearInput = () => {
+document.getElementById("result").value = "";
+document.getElementById("history").value = "";
 
- }
+expression = "";
+operand = [];
+operator = [];
+};
+const deleteHistoryItem = (index) => {
+history.splice(index, 1);
+localStorage.setItem("history", JSON.stringify(history));
+handleHistory();
+};
+const appendBackspace = () => {
+let expression = document.getElementById("result").value;
+expression = expression.slice(0, -1);
+document.getElementById("result").value = expression;
+};
 
- const appendBackspace = () => {
-    var expression = document.getElementById('result').value;
-    expression = expression.slice(0, -1);
-    document.getElementById('result').value = expression;
-  };
-   
-    // const evaluate =()=>{
-    // const operand1 = appendNumber(number);
-    // console.log(operand1);
-    // console.log(operand2);
-    // const operator= appendCharacter(char);
-    // const operand2 = appendNumber(number);
-    // let result;
-
-    // if(operator == '+')
-    // {
-    //     result = operand1 + operand2;
-    // }
-    // else if(operator == '-')
-    // {
-    //     result = operand1 - operand2;
-    // }
-    // console.log(result)
-    //     document.getElementById('result').value += result;
-
-    // }
-        
-  
