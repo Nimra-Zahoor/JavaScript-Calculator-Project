@@ -12,29 +12,13 @@ const isNumber = (char)=> {
   const appendNumber = (number) => {
    if(isNumber(number))
    {
-    console.log("if working")
     expression+=number;
     document.getElementById("result").value += number;
-   }
-   else{
-    console.log("not a number")
-   }
-    // if(number<0)
-    // { 
-    //   number = "-"+"number"
-    //   document.getElementById("result").value += number;
-    //   expression += number;
-    // }
-   
-//    expression += number;
-    
+   }  
   };
   
-  
 const appendCharacter = (char) => {
-
- 
-    document.getElementById("result").value += char;
+  document.getElementById("result").value += char;
   expression += char;
 };
 
@@ -63,6 +47,7 @@ const getPrecedence = (operator) => {
       return -1;
   }
 };
+
 const applyOperator = (operator) => {
   const b = parseFloat(operand.pop());
   const a = parseFloat(operand.pop());
@@ -113,8 +98,6 @@ const applyOperator = (operator) => {
   return result;
 };
 
-
-
 const calculateResult = () => {
   expression = document.getElementById("result").value;
   document.getElementById("result").classList.remove("error-input");
@@ -124,7 +107,6 @@ const calculateResult = () => {
     document.getElementById("error").textContent = err;
     return;
   }
-  // Validate the expression format using regular expressions
   let regex = /^(-?\d+(\.\d+)?|[a-zA-Z]+)(\s*[-+\/*^%]\s*(-?\d+(\.\d+)?|[a-zA-Z]+))*$/;
   if (!regex.test(expression)) {
     err = "Invalid Expression";
@@ -140,11 +122,9 @@ const calculateResult = () => {
     regex = /(-?\d+(\.\d+)?|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\%|\^|sqrt|cos|tan|sin|PI|e)/g;
   }
   const tokens = expression.match(regex);
-  console.log("tokens",tokens)
   if (!tokens || tokens.length === 0) {
     err = "Add correct Expression";
     document.getElementById("error").value = err;
-    console.log("Invalid expression");
     return;
   }
 
@@ -160,11 +140,10 @@ const calculateResult = () => {
         operand.push(result);
       }
       if (operator.length > 0 && operator[operator.length - 1] === "(") {
-        operator.pop(); // Pop "(" from the operator stack
+        operator.pop(); 
       }
     } else {
       if (token in variables) {
-        // Use variable value instead of the variable name
         operand.push(variables[token]);
       } else {
         while (
@@ -208,12 +187,10 @@ const calculateResult = () => {
     history.unshift(expression + " = " + finalResult);
     localStorage.setItem("history", JSON.stringify(history));
   }
-  console.log(finalResult)
 };
 let historyText = "";
 const handleHistory = () => {
   history = JSON.parse(localStorage.getItem("history")) || [];
-  console.log(history.length)
   for (let i = 0; i < history.length; i++) {
   const historyItem = history[i];
   historyText += historyItem + "\n";
@@ -221,13 +198,9 @@ const handleHistory = () => {
   document.getElementById("history").innerHTML = historyText;
   };
   const deleteHistoryItem = (index) => {
-    console.log("delete history working")
     if (index >= 0 && index <= history.length) {
-      console.log("if working")
-      console.log("i am history before delete",history)
       history.splice(index, 1);
       localStorage.setItem("history", JSON.stringify(history));
-      console.log("i am history after delete",history)
       document.getElementById("history").innerHTML = history+"\n";
     }
   };
@@ -259,12 +232,10 @@ const appendBackspace = () => {
     document.getElementById("variableValue").classList.remove("error-input");
     err = "";
     document.getElementById("error").textContent = err;
-    console.log(variables);
 
   }
   else {
     err = "Variable already exists";
-    console.log("i am working")
     document.getElementById("error").textContent = err;
     document.getElementById("variableName").classList.add("error-input");
     document.getElementById("variableValue").classList.add("error-input");
