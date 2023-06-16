@@ -3,31 +3,46 @@
 <head>
   <title>Calculator</title>
   <link rel="stylesheet" href="./calculator.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
   <script src="calculator.js"></script>
 </head>
-<body>  <div class="container">
+<body>
+  <div class="container">
     <div class="row">
       <div class="wrapper">
-        <textarea id="history" rows="5" cols="30" placeholder="Press H for history" class="form-control mb-5"></textarea>
-        <h1 class="text-center mb-5 ">Calculator</h1>
+        <span id="del"><a onclick="deleteHistoryItem(1)"><i class="fas fa-trash"></i></a><br/>
+        </span>
+        <textarea id="history" rows="5" cols="30" placeholder="Press H for history" class="form-control mb-5">
+         
+        </textarea>
+        <h1 class="text-center mb-5">Calculator</h1>
+        <div>
+          <span id="error"></span><br/>
+          <input  id="variableName"  type="text" class="form-control" placeholder="Variable Name">
+          <input   id="variableValue"  type="text" class="form-control" placeholder="Variable Value"><br/>
+          <button class="btn-primary" onclick="addVariable()">Add Variable</button>
+        </div>
         <span id="error"></span><br/>
-        <input type="text" id="result" class="form-control mt-5">
+        <div class="input-div">
+          <input class="input-result" type="text" id="result" class="form-control mt-5"></input>
+        </div>
         <div class="text-center">
-            <button class="btn btn-light btn-lg" onclick="appendCharacter('sqrt')">√</button>
-            <button class="btn btn-light btn-lg" onclick="appendCharacter('sin')">sin</button>
-            <button class="btn btn-light btn-lg" onclick="appendCharacter('cos')">cos</button>
-            <button class="btn btn-light btn-lg" onclick="appendCharacter('tan')">tan</button>
-            <br>
-            <button class="btn btn-light btn-lg" data-value='*3.14' onclick="appendCharacter('PI')">π</button>
-            <button class="btn btn-light btn-lg" onclick="appendCharacter('e')">e</button>
-            <button class="btn btn-light btn-lg" onclick="appendBackspace()">←</button>
-            <button class="btn btn-light btn-lg" onclick="clearInput()">C</button>
-            <br/>
-            <button class="btn btn-light btn-lg" onclick="appendCharacter('&#40;')">&#40;</button>
-            <button class="btn btn-light btn-lg" onclick="appendCharacter('&#41;')"> &#41;</button>
-            <button class="btn btn-light btn-lg" onclick="handleHistory()">H</button>
-            <button class="btn btn-operation btn-lg" onclick="appendCharacter('^')">^</button>
-            <br/>
+          <button class="btn btn-light btn-lg" onclick="appendCharacter('sqrt')">√</button>
+          <button class="btn btn-light btn-lg" onclick="appendCharacter('sin')">sin</button>
+          <button class="btn btn-light btn-lg" onclick="appendCharacter('cos')">cos</button>
+          <button class="btn btn-light btn-lg" onclick="appendCharacter('tan')">tan</button>
+          <br>
+          <button class="btn btn-light btn-lg" onclick="appendCharacter('PI')">π</button>
+         <button class="btn btn-light btn-lg" onclick="appendCharacter('e')">e</button>
+          <button class="btn btn-light btn-lg" onclick="appendBackspace()">←</button>
+          <button class="btn btn-light btn-lg" onclick="clearInput()">C</button>
+          <br/>
+          <button class="btn btn-light btn-lg" onclick="appendCharacter('(')">(</button>
+          <button class="btn btn-light btn-lg" onclick="appendCharacter(')')">)</button>
+          <button class="btn btn-light btn-lg" onclick="handleHistory()">H</button>
+          <button class="btn btn-operation btn-lg" onclick="appendCharacter('^')">^</button>
+          <br/>
           <button class="btn btn-light btn-lg" onclick="appendNumber('7')">7</button>
           <button class="btn btn-light btn-lg" onclick="appendNumber('8')">8</button>
           <button class="btn btn-light btn-lg" onclick="appendNumber('9')">9</button>
@@ -43,13 +58,14 @@
           <button class="btn btn-light btn-lg" onclick="appendNumber('3')">3</button>
           <button class="btn btn-operation btn-lg" onclick="appendCharacter('-')">-</button>
           <br>
-          <button class="btn btn-light btn-lg " onclick="appendNumber('0')">0</button>
+          <button class="btn btn-light btn-lg" onclick="appendNumber('0')">0</button>
           <button class="btn btn-light btn-lg" onclick="appendCharacter('.')">.</button>
           <button class="btn btn-equals btn-lg" onclick="calculateResult()"> = </button>
           <button class="btn btn-operation btn-lg" onclick="appendCharacter('+')">+</button>
           <br>
           <div id="error"></div>
         </div>
+      
       </div>
     </div>
   </div>
