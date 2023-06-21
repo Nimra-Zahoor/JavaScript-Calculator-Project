@@ -1,51 +1,45 @@
 let operator = [];
 let operand = [];
-let variables = {}; // Object to store variables and their values
+let variables = {};
 let expression = "";
 let history = [];
 let err = "";
-let sign ;
 
-const isNumber = (char)=> {
+const isNumber = (char) => {
   return !isNaN(parseFloat(char));
-  }
-  const appendNumber = (number) => {
-   if(isNumber(number))
-   {
-    expression+=number;
+};
+
+const appendNumber = (number) => {
+  if (isNumber(number)) {
+    expression += number;
     document.getElementById("result").value += number;
-   }  
-  };
-  
+  }
+};
+
 const appendCharacter = (char) => {
   document.getElementById("result").value += char;
   expression += char;
 };
 
 const getPrecedence = (operator) => {
-  switch (operator) {
-    case "(":
-      return 0;
-    case ")":
-      return 1;
-    case "+":
-    case "-":
-      return 2;
-    case "*":
-    case "/":
-    case "%":
-      return 3;
-    case "^":
-    case "sqrt":
-    case "cos":
-    case "tan":
-    case "sin":
-    case "PI":
-    case "e":
-      return 4;
-    default:
-      return -1;
-  }
+  const precedence = {
+    "(": 0,
+    ")": 1,
+    "+": 2,
+    "-": 2,
+    "*": 3,
+    "/": 3,
+    "%": 3,
+    "^": 4,
+    "sqrt": 4,
+    "cos": 4,
+    "tan": 4,
+    "sin": 4,
+    "PI": 4,
+    "e": 4,
+  };
+
+  return precedence[operator] || -1;
 };
 
 const applyOperator = (operator) => {
@@ -54,7 +48,6 @@ const applyOperator = (operator) => {
   let result;
   switch (operator) {
     case "+":
-    case "":  
       result = a + b;
       break;
     case "-":
@@ -97,7 +90,6 @@ const applyOperator = (operator) => {
   operand.push(result.toString());
   return result;
 };
-
 const calculateResult = () => {
   expression = document.getElementById("result").value;
   document.getElementById("result").classList.remove("error-input");
@@ -107,28 +99,22 @@ const calculateResult = () => {
     document.getElementById("error").textContent = err;
     return;
   }
-  let regex = /^(-?\d+(\.\d+)?|[a-zA-Z]+)(\s*[-+\/*^%]\s*(-?\d+(\.\d+)?|[a-zA-Z]+))*$/;
-  if (!regex.test(expression)) {
-    err = "Invalid Expression";
-    document.getElementById("error").textContent = err;
-    document.getElementById("result").classList.add("error-input");
-
-    return;
-  }
-  operand = [];
-  operator = [];
-   regex = /(\d+(\.\d+)?|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\%|\^|sqrt|cos|tan|sin|PI|e)/g;
-  if(!isNumber(expression[0])){
-    regex = /(-?\d+(\.\d+)?|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\%|\^|sqrt|cos|tan|sin|PI|e)/g;
-  }
-  const tokens = expression.match(regex);
-  if (!tokens || tokens.length === 0) {
-    err = "Add correct Expression";
-    document.getElementById("error").value = err;
-    return;
-  }
-
-  for (let i = 0; i < tokens.length; i++) {
+  operand = []
+  operator = []
+regex = /(\d+(\.\d+)?|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\%|\^|sqrt|cos|tan|sin|PI|e)/g;
+if(!isNumber(expression[0])){
+  console.log("expression[0]",expression[0])
+regex = /(-?\d+(\.\d+)?|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\%|\^|sqrt|cos|tan|sin|PI|e)/g;
+}
+const tokens = expression.match(regex);
+if (!tokens || tokens.length === 0) {
+err = "Add correct Expression";
+console.log("tokens",tokens)
+document.getElementById("error").value = err;
+return;
+}
+  let i =0;
+  for (i in tokens ){
     const token = tokens[i];
     if (isNumber(token)) {
       operand.push(token);
@@ -137,15 +123,19 @@ const calculateResult = () => {
     } else if (token === ")") {
       while (operator.length > 0 && operator[operator.length - 1] !== "(") {
         const result = applyOperator(operator.pop());
+        console.log("Result of bracket",result)
+        operand.pop();
         operand.push(result);
+        console.log("operands",operand);
       }
       if (operator.length > 0 && operator[operator.length - 1] === "(") {
-        operator.pop(); 
+        operator.pop();
       }
     } else {
       if (token in variables) {
         operand.push(variables[token]);
-      } else {
+      } 
+       else {
         while (
           operator.length > 0 &&
           getPrecedence(operator[operator.length - 1]) >= getPrecedence(token)
@@ -157,6 +147,7 @@ const calculateResult = () => {
       }
     }
   }
+
   while (operator.length > 0) {
     const result = applyOperator(operator.pop());
     operand.push(result);
@@ -176,7 +167,7 @@ const calculateResult = () => {
     finalResult === "Infinity" ||
     finalResult === ""
   ) {
-  err = "Invalid Expression";
+    err = "Invalid Expression";
     document.getElementById("error").textContent = err;
     document.getElementById("result").classList.add("error-input");
   } else {
@@ -188,24 +179,25 @@ const calculateResult = () => {
     localStorage.setItem("history", JSON.stringify(history));
   }
 };
-let historyText = "";
+
 const handleHistory = () => {
   history = JSON.parse(localStorage.getItem("history")) || [];
+  let historyText = "";
   for (let i = 0; i < history.length; i++) {
-  const historyItem = history[i];
-  historyText += historyItem + "\n";
+    const historyItem = history[i];
+    historyText += historyItem + "\n";
   }
   document.getElementById("history").innerHTML = historyText;
-  };
-  const deleteHistoryItem = (index) => {
-    if (index >= 0 && index <= history.length) {
-      history.splice(index, 1);
-      localStorage.setItem("history", JSON.stringify(history));
-      document.getElementById("history").innerHTML = history+"\n";
-    }
-  };
-   
- 
+};
+
+const deleteHistoryItem = (index) => {
+  if (index >= 0 && index < history.length) {
+    history.splice(index, 1);
+    localStorage.setItem("history", JSON.stringify(history));
+    handleHistory();
+  }
+};
+
 const clearInput = () => {
   document.getElementById("result").value = "";
   document.getElementById("history").value = "";
@@ -220,25 +212,26 @@ const appendBackspace = () => {
   expression = expression.slice(0, -1);
   document.getElementById("result").value = expression;
 };
- const addVariable = () => {
+
+const addVariable = () => {
   const variableName = document.getElementById("variableName").value;
   const variableValue = document.getElementById("variableValue").value;
   if (variableName && variableValue && !variables[variableName]) {
-
-    variables[variableName] = variableValue;
-    document.getElementById("variableName").value = "";
-    document.getElementById("variableValue").value = "";
-    document.getElementById("variableName").classList.remove("error-input");
-    document.getElementById("variableValue").classList.remove("error-input");
-    err = "";
-    document.getElementById("error").textContent = err;
-
+  
+  variables[variableName] = variableValue;
+  document.getElementById("variableName").value = "";
+  document.getElementById("variableValue").value = "";
+  document.getElementById("variableName").classList.remove("error-input");
+  document.getElementById("variableValue").classList.remove("error-input");
+  err = "";
+  document.getElementById("error").textContent = err;
+  
   }
   else {
-    err = "Variable already exists";
-    document.getElementById("error").textContent = err;
-    document.getElementById("variableName").classList.add("error-input");
-    document.getElementById("variableValue").classList.add("error-input");
+  err = "Variable already exists";
+  document.getElementById("error").textContent = err;
+  document.getElementById("variableName").classList.add("error-input");
+  document.getElementById("variableValue").classList.add("error-input");
   }
-};
+  };
 handleHistory();
